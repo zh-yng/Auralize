@@ -27,22 +27,31 @@ export default function HomeScreen() {
   const handleCreateRoom = async () => {
       const code = Math.floor(1000 + Math.random() * 9000).toString();
       const userId = user?.uid;
+      const roomRef = doc(db, 'rooms', code);
   
       // save room in Firestore under /rooms/{code}
-      await setDoc(doc(db, 'rooms', code), {
+      await setDoc(roomRef, {
         host: userId,
         members: [userId],
         createdAt: new Date(),
+        aura: '',
       });
       Toast.success(`Room created! Code: ${code}`);
       setCode(code);
       setHost(userId || null);
       
       // subscribe to live updates of the room
-      const unsub = onSnapshot(doc(db, 'rooms', code), (snap) => {
-        if (snap.exists()) {
-          setMembers(snap.data()?.members || []);
+      const unsub = onSnapshot(roomRef, (s) => {
+        if (s.exists()) {
+          const data = s.data() as any;
+          if (data.aura) setAura(data.aura);
+          setMembers(data.members || []);
+        } else {
+          setAura('');
+          setMembers([]);
         }
+      }, (err) => {
+        console.warn('Room snapshot error:', err);
       });
   
       // clean up previous subscription if any
@@ -51,10 +60,22 @@ export default function HomeScreen() {
       }
       unsubRef.current = unsub;
     };
-  const handlePress = (feature: string) => {
+  const handlePress = async (feature: string) => {
     if (!code) {
       Alert.alert("No Room", "Please create a room first!");
       return;
+    }
+
+    if (host && user && host !== user.uid) {
+      Alert.alert("Not Host", "Only the host can change features!");
+      return;
+    } else {
+      //write feature as aura to firebase
+      const roomRef = doc(db, 'rooms', code);
+      await updateDoc(roomRef, { aura: feature }).catch((err) => {
+        console.error("Error updating aura:", err);
+        Toast.error("Failed to update feature");
+      });
     }
     
     Alert.alert('Feature Selected', `You selected ${feature} in room ${code}`);
@@ -62,61 +83,64 @@ export default function HomeScreen() {
   };
 
   // clean up when leaving the screen
-    useEffect(() => {
-      return () => {
-        if (unsubRef.current) {
-          unsubRef.current();
-          unsubRef.current = null;
-        }
-      };
-    }, []);
-    
-    const handleJoin = async () => {
-      const cleanCode = inputCode?.trim();
-      if (cleanCode?.length !== 4) {
-        Toast.error('Enter a 4-digit code');
-        return;
-      }
-  
-      try {
-        const roomRef = doc(db, 'rooms', cleanCode);
-        const snap = await getDoc(roomRef);
-        if (!snap.exists()) {
-          Toast.error('Room not found — check the code');
-          return;
-        }
-  
-        const userId = user?.uid ?? `guest-${Math.random().toString(36).slice(2, 8)}`;
-        await updateDoc(roomRef, { members: arrayUnion(userId) });
-        setCode(cleanCode);
-        Toast.success('Successfully joined room!');
-  
-        // unsubscribe previous subscription if any (rare)
-        if (unsubRef.current) {
-          unsubRef.current();
-          unsubRef.current = null;
-        }
-  
-        // subscribe to live updates of the room
-        const unsub = onSnapshot(roomRef, (s) => {
-          if (s.exists()) {
-            const data = s.data() as any;
-            setHost(data.host || null);
-            setMembers(data.members || []);
-          } else {
-            setHost(null);
-            setMembers([]);
-          }
-        }, (err) => {
-          console.warn('Room snapshot error:', err);
-        });
-  
-        unsubRef.current = unsub;
-      } catch (err: any) {
-        Toast.error(err.message || 'Failed to join room');
-        console.error(err);
+  useEffect(() => {
+    return () => {
+      if (unsubRef.current) {
+        unsubRef.current();
+        unsubRef.current = null;
       }
     };
+  }, []);
+  
+  const handleJoin = async () => {
+    const cleanCode = inputCode?.trim();
+    if (cleanCode?.length !== 4) {
+      Toast.error('Enter a 4-digit code');
+      return;
+    }
+
+    try {
+      const roomRef = doc(db, 'rooms', cleanCode);
+      const snap = await getDoc(roomRef);
+      if (!snap.exists()) {
+        Toast.error('Room not found — check the code');
+        return;
+      }
+
+      const userId = user?.uid ?? `guest-${Math.random().toString(36).slice(2, 8)}`;
+      await updateDoc(roomRef, { members: arrayUnion(userId) });
+      setCode(cleanCode);
+      Toast.success('Successfully joined room!');
+
+      // unsubscribe previous subscription if any (rare)
+      if (unsubRef.current) {
+        unsubRef.current();
+        unsubRef.current = null;
+      }
+
+      // subscribe to live updates of the room
+      const unsub = onSnapshot(roomRef, (s) => {
+        if (s.exists()) {
+          const data = s.data() as any;
+          setHost(data.host || null);
+          if (data.aura) setAura(data.aura);
+          setMembers(data.members || []);
+          console.log("USER: ", userId, "AURA: ", data.aura);
+        } else {
+          setHost(null);
+          setAura('');
+          setMembers([]);
+        }
+      }, (err) => {
+        console.warn('Room snapshot error:', err);
+      });
+
+      unsubRef.current = unsub;
+    } catch (err: any) {
+      Toast.error(err.message || 'Failed to join room');
+      console.error(err);
+    }
+  };
 
   // handle leaving the room and removing member from firebase
   const handleLeaveRoom = async () => {
@@ -178,7 +202,7 @@ export default function HomeScreen() {
           {user && code && (
             <>
               <ThemedText type="title" style={styles.titleText}>Welcome to {"Aura " + code}</ThemedText>
-              <ThemedText style={styles.subtitleText}>Choose your experience</ThemedText>
+              {user && user.uid == host && <ThemedText style={styles.subtitleText}>Choose your experience</ThemedText>}
             </>
           )}
         </ThemedView>
@@ -191,9 +215,10 @@ export default function HomeScreen() {
           )}
         </ThemedView>
 
+        <Flashlight aura={aura} />
+
         {user && code && host && (user.uid == host) && (
           <>
-          <Flashlight aura={aura} />
           <ThemedView style={styles.buttonsContainer}>
             <TouchableOpacity style={styles.button} onPress={() => handlePress('twinkle')}>
               <ThemedText style={styles.buttonText}>✨ Twinkle</ThemedText>
@@ -206,10 +231,6 @@ export default function HomeScreen() {
             <TouchableOpacity style={styles.button} onPress={() => handlePress('heart')}>
               <ThemedText style={styles.buttonText}>❤️ Heart</ThemedText>
             </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('hackgt12')}>
-              <ThemedText style={styles.buttonText}>🚀 HackGT12</ThemedText>
-            </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => handlePress('shine')}>
               <ThemedText style={styles.buttonText}>💡 Shine</ThemedText>
@@ -217,10 +238,6 @@ export default function HomeScreen() {
 
             <TouchableOpacity style={styles.button} onPress={() => handlePress('custom')}>
               <ThemedText style={styles.buttonText}> 🎉Custom</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('pulse')}>
-              <ThemedText style={styles.buttonText}>🔉 Pulse</ThemedText>
             </TouchableOpacity>
           </ThemedView>
           </>
