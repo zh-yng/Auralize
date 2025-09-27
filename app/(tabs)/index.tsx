@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/themed-view';
 // Firebase imports
 import Flashlight from '@/components/flashlight';
 import useFirebaseAuth from '@/hooks/use-firebase-auth';
-import { arrayUnion, doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, deleteDoc, doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { OtpInput } from 'react-native-otp-entry';
 import { Toast } from 'toastify-react-native';
 import { db } from '../../firebaseConfig';
@@ -17,6 +17,7 @@ export default function HomeScreen() {
   const [inputCode, setInputCode] = useState('');
   const [members, setMembers] = useState<string[]>([]);
   const unsubRef = useRef<(() => void) | null>(null);
+  const [host, setHost] = useState<string | null>(null);
 
   const [aura, setAura] = useState('');
 
@@ -35,6 +36,7 @@ export default function HomeScreen() {
       });
       Toast.success(`Room created! Code: ${code}`);
       setCode(code);
+      setHost(userId || null);
       
       // subscribe to live updates of the room
       const unsub = onSnapshot(doc(db, 'rooms', code), (snap) => {
@@ -99,8 +101,10 @@ export default function HomeScreen() {
         const unsub = onSnapshot(roomRef, (s) => {
           if (s.exists()) {
             const data = s.data() as any;
+            setHost(data.host || null);
             setMembers(data.members || []);
           } else {
+            setHost(null);
             setMembers([]);
           }
         }, (err) => {
@@ -113,12 +117,70 @@ export default function HomeScreen() {
         console.error(err);
       }
     };
-  
+
+  // handle leaving the room and removing member from firebase
+  const handleLeaveRoom = async () => {
+    if (!code) return;
+
+    const userId = user?.uid;
+    const roomRef = doc(db, 'rooms', code);
+
+    try {
+      await updateDoc(roomRef, { members: arrayRemove(userId) });
+      Toast.success('Left room successfully');
+
+      setCode(null);
+      setMembers([]);
+      setHost(null);
+      setAura('');
+
+      // unsubscribe from room updates
+      if (unsubRef.current) {
+        unsubRef.current();
+        unsubRef.current = null;
+      }
+    } catch (err: any) {
+      Toast.error(err.message || 'Failed to leave room');
+      console.error(err);
+    }
+  };
+
+  const handleCloseRoom = async () => {
+    if (!code) return;
+    
+    const roomRef = doc(db, 'rooms', code);
+    
+    try {
+      await deleteDoc(doc(db, "rooms", code));
+
+      Toast.success('Room closed successfully');
+
+      setCode(null);
+      setMembers([]);
+      setHost(null);
+      setAura('');
+
+      // unsubscribe from room updates
+      if (unsubRef.current) {
+        unsubRef.current();
+        unsubRef.current = null;
+      }
+    } catch (err: any) {
+      Toast.error(err.message || 'Failed to close room');
+      console.error(err);
+    }
+  };
+
   return (
       <ThemedView style={styles.container}>
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title" style={styles.titleText}>Welcome to {code ? ("Aura " + code) : "Auralize"}</ThemedText>
-          {code && <ThemedText style={styles.subtitleText}>Choose your experience</ThemedText>}
+          {!user && <ThemedText type="title" style={styles.titleText}>Welcome to Auralize</ThemedText>}
+          {user && code && (
+            <>
+              <ThemedText type="title" style={styles.titleText}>Welcome to {"Aura " + code}</ThemedText>
+              <ThemedText style={styles.subtitleText}>Choose your experience</ThemedText>
+            </>
+          )}
         </ThemedView>
 
         <ThemedView style={styles.titleContainer}>
@@ -129,7 +191,7 @@ export default function HomeScreen() {
           )}
         </ThemedView>
 
-        {user && code && (
+        {user && code && host && (user.uid == host) && (
           <>
           <Flashlight aura={aura} />
           <ThemedView style={styles.buttonsContainer}>
@@ -138,7 +200,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.button} onPress={() => handlePress('ripple')}>
-              <ThemedText style={styles.buttonText}>🌊 Ripple Wave</ThemedText>
+              <ThemedText style={styles.buttonText}>🌊 Ripple</ThemedText>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.button} onPress={() => handlePress('heart')}>
@@ -149,12 +211,16 @@ export default function HomeScreen() {
               <ThemedText style={styles.buttonText}>🚀 HackGT12</ThemedText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('Custom')}>
-              <ThemedText style={styles.buttonText}> 🎉Custom – Decide your Own!</ThemedText>
+            <TouchableOpacity style={styles.button} onPress={() => handlePress('shine')}>
+              <ThemedText style={styles.buttonText}>💡 Shine</ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={() => handlePress('custom')}>
+              <ThemedText style={styles.buttonText}> 🎉Custom</ThemedText>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => handlePress('pulse')}>
-              <ThemedText style={styles.buttonText}>💡 Pulse</ThemedText>
+              <ThemedText style={styles.buttonText}>🔉 Pulse</ThemedText>
             </TouchableOpacity>
           </ThemedView>
           </>
@@ -184,12 +250,13 @@ export default function HomeScreen() {
                       <ThemedText style={styles.buttonText}>🤝 Join</ThemedText>
                     </TouchableOpacity>
                   </ThemedView>
-          
-                  {/* show members as simple count */}
-                  <ThemedView style={{ marginTop: 12, alignItems: 'center' }}>
-                    <ThemedText>Members in room: {members.length}</ThemedText>
-                  </ThemedView>
-          
+
+                  {members.length > 0 && (
+                    <ThemedView style={{ marginTop: 12, alignItems: 'center' }}>
+                      <ThemedText>Members in room: {members.length}</ThemedText>
+                    </ThemedView>
+                  )}
+
                   <TouchableOpacity style={styles.button} onPress={() => handleCreateRoom()}>
                     <ThemedText style={styles.buttonText}>🤝 Auralize </ThemedText>
                   </TouchableOpacity>

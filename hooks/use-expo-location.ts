@@ -4,26 +4,7 @@ import { useEffect, useState } from "react";
 export function useExpoLocation() {
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    // const [toggle, setToggle] = useState(false);
-
-    // useEffect(() => {
-    //     (async () => {
-    //         try {
-    //             // Ask permission
-    //             const { status } = await Location.requestForegroundPermissionsAsync();
-    //             if (status !== "granted") {
-    //                 setErrorMsg("Permission to access location was denied");
-    //                 return;
-    //             }
-
-    //             // Get location
-    //             const loc = await Location.getCurrentPositionAsync({});
-    //             setLocation(loc);
-    //         } catch (err) {
-    //             setErrorMsg("Error getting location");
-    //         }
-    //     })();
-    // }, [toggle]);
+    const [initialLocation, setInitialLocation] = useState<Location.LocationObject | null>(null);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -39,6 +20,9 @@ export function useExpoLocation() {
                     // Get location
                     const loc = await Location.getCurrentPositionAsync({});
                     setLocation(loc);
+                    if (!initialLocation) {
+                        setInitialLocation(loc);
+                    }
                 } catch (err) {
                     setErrorMsg("Error getting location");
                 }
@@ -49,5 +33,5 @@ export function useExpoLocation() {
         return () => clearInterval(interval);
     }, []);
 
-    return { location, errorMsg };
+    return { location, initialLocation, errorMsg };
 }

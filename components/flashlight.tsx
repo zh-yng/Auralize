@@ -10,7 +10,7 @@ type FlashlightProps = {
 
 const Flashlight = (props: FlashlightProps) => {
     const { facing, torch, setTorch, permission, requestPermission } = useExpoCamera();
-    const { location, errorMsg } = useExpoLocation();
+    const { location, initialLocation, errorMsg } = useExpoLocation();
 
     const k1 = 0.1;
     const k2 = 0.1;
@@ -18,21 +18,28 @@ const Flashlight = (props: FlashlightProps) => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-          if (location != null) {
+          if (location != null && initialLocation != null) {
             switch (props.aura) {
                 case 'ripple':
                     const sineValue = Math.sin(k1 * location.coords.longitude + k2 * location.coords.latitude - omega * (Date.now()));
                     setTorch(sineValue > 0);
                     break;
+                case 'twinkle':
+                    const randomValue = Math.random();
+                    setTorch(randomValue > 0.8);
+                    break;
+                // create the heart case with 2d heart function that does not move and shows light above 0.5
+                case 'heart':
+                    const heartValue = Math.pow(k1*Math.pow(initialLocation.coords.longitude, 2) + Math.pow(k2 * initialLocation.coords.latitude, 2) - 1, 3) - Math.pow(k1 * initialLocation.coords.longitude, 2) * Math.pow(k2* initialLocation.coords.latitude, 3);
+                    setTorch(heartValue > 0.5);
+                    break;
+                case 'shine':
+                    setTorch(true);
+                    break;
                 default:
                     setTorch(false);
                     break;
-                // case 'heart':
-                //     const heartValue = Math.pow(Math.sin((k1 * location.coords.longitude + k2 * location.coords.latitude - omega * (Date.now()))), 3);
-                //     setTorch(heartValue > 0);
-                //     break; 
             }
-            console.log(props.aura);
           }
         }, 200);
     
