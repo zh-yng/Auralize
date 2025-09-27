@@ -4,7 +4,6 @@ import { useExpoLocation } from '@/hooks/use-expo-location';
 import { Stack } from "expo-router";
 import { useEffect } from 'react';
 import { Button, Text, View } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
 import ToastManager from 'toastify-react-native';
 
 export default function RootLayout() {
@@ -52,10 +51,10 @@ export default function RootLayout() {
 
   return (
     <>
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['right', 'top', 'left', 'bottom']}>
+    {/* <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['right', 'top', 'left', 'bottom']}> */}
       <Stack screenOptions={{ headerShown: false }} />
       <ToastManager />
-    </SafeAreaView>
+    {/* </SafeAreaView> */}
     </>
     // <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['right', 'top', 'left', 'bottom']}>
     // </SafeAreaView>
