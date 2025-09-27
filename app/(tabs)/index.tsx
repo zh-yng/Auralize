@@ -245,29 +245,32 @@ export default function HomeScreen() {
         {user && code && host && (user.uid == host) && (
           <>
           <ThemedView style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('twinkle')}>
-              <ThemedText style={styles.buttonText}>✨ Twinkle</ThemedText>
-            </TouchableOpacity>
+            <ThemedView style={styles.row}>
+              <TouchableOpacity style={styles.special} onPress={() => handlePress('twinkle')}>
+                <ThemedText style={styles.buttonText}>✨ Twinkle</ThemedText>
+              </TouchableOpacity>
             
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('ripple')}>
-              <ThemedText style={styles.buttonText}>🌊 Ripple</ThemedText>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.special} onPress={() => handlePress('ripple')}>
+                <ThemedText style={styles.buttonText}>🌊 Ripple</ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+            <ThemedView style={styles.row}>
+              <TouchableOpacity style={styles.special} onPress={() => handlePress('shine')}>
+                <ThemedText style={styles.buttonText}>💡 Shine</ThemedText>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('shine')}>
-              <ThemedText style={styles.buttonText}>💡 Shine</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('heart')}>
-              <ThemedText style={styles.buttonText}>❤️ Heart</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('custom')}>
-              <ThemedText style={styles.buttonText}>🎉 Custom</ThemedText>
-            </TouchableOpacity>
-
+              <TouchableOpacity style={styles.special} onPress={() => handlePress('heart')}>
+                <ThemedText style={styles.buttonText}>❤️ Heart</ThemedText>
+              </TouchableOpacity>
+            </ThemedView>
+                <TouchableOpacity style={styles.button} onPress={() => handlePress('custom')}>
+                <ThemedText style={styles.buttonText}>🎉 Custom</ThemedText>
+              </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => handlePress('off')}>
               <ThemedText style={styles.buttonText}>Turn Off</ThemedText>
             </TouchableOpacity>
+            
+            
           </ThemedView>
           </>
         )}
@@ -352,21 +355,21 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     marginBottom: 8,
     textAlign: 'center',
-    fontFamily: 'Funnel Display',
-  },
+    fontFamily: 'FunnelDisplay_700Bold', // ✅ must match what you loaded
+},
   subtitleText: {
     fontSize: 16,
     fontWeight: '400',
     color: '#64748b',
     textAlign: 'center',
-    fontFamily: 'Funnel Display',
-  },
+    fontFamily: 'FunnelDisplay_400Regular', // ✅ exact key
+},
   buttonText: {
     fontSize: 18,
     fontWeight: '600',
     color: '#334155',
-    fontFamily: 'Funnel Display',
-  },
+    fontFamily: 'FunnelDisplay_600SemiBold', // ✅ exact key
+},
   reactLogo: {
     height: 250,
     width: '100%',
@@ -374,6 +377,33 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: 0,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 5, // adds space between buttons (RN 0.71+)
+    backgroundColor: 'transparent',
+  },
+  flexButton: {
+    flex: 1, // makes buttons equal width
+  },
+  special:{
+    width: 150,
+    backgroundColor: '#ffffff',
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   digits: { width: 200, justifyContent: 'space-between' },
   horizontal: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'transparent' },
