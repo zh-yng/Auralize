@@ -1,10 +1,11 @@
 import { useExpoCamera } from '@/hooks/use-expo-camera';
 import { useExpoLocation } from '@/hooks/use-expo-location';
-import { CameraView } from 'expo-camera';
 
 import { Stack } from "expo-router";
 import { useEffect } from 'react';
 import { Button, Text, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ToastManager from 'toastify-react-native';
 
 export default function RootLayout() {
 
@@ -51,25 +52,26 @@ export default function RootLayout() {
 
   return (
     <>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['right', 'top', 'left', 'bottom']}>
       <Stack screenOptions={{ headerShown: false }} />
-      
-      <View style={{ padding: 16, marginBottom: 80, backgroundColor: "#fff" }}>
-        <CameraView facing={facing} enableTorch={torch} />
-        
-        {/* {errorMsg ? (
-          <Text style={{ color: "red" }}>{errorMsg}</Text>
-        ) : location ? (
-          <Text>
-            Lat: {location.coords.latitude}, Lon: {location.coords.longitude}
-          </Text>
-        ) : (
-          <Text>Fetching location...</Text>
-        )} */}
-
-        {/* <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} /> */}
-        {/* <Button title={torch ? "Torch Off" : "Torch On"} onPress={() => setTorch(t => !t)} /> */}
-
-      </View>
+      <ToastManager />
+    </SafeAreaView>
     </>
+    // <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['right', 'top', 'left', 'bottom']}>
+    // </SafeAreaView>
+        /* <CameraView facing={facing} enableTorch={torch} /> */
+          
+          /* {errorMsg ? (
+            <Text style={{ color: "red" }}>{errorMsg}</Text>
+          ) : location ? (
+            <Text>
+              Lat: {location.coords.latitude}, Lon: {location.coords.longitude}
+            </Text>
+          ) : (
+            <Text>Fetching location...</Text>
+          )} */
+
+          /* <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} /> */
+          /* <Button title={torch ? "Torch Off" : "Torch On"} onPress={() => setTorch(t => !t)} /> */
   );
 }

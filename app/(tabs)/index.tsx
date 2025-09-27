@@ -1,10 +1,7 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet, Button, Alert, TouchableOpacity, useColorScheme } from 'react-native';
+import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
 
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 
 export default function HomeScreen() {
   const handlePress = (feature: string) => {
@@ -13,7 +10,7 @@ export default function HomeScreen() {
   return (
       <ThemedView style={styles.container}>
         <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title" style={styles.titleText}>Welcome to Aura</ThemedText>
+          <ThemedText type="title" style={styles.titleText}>Welcome to Auralize</ThemedText>
           <ThemedText style={styles.subtitleText}>Choose your experience</ThemedText>
         </ThemedView>
         
@@ -43,6 +40,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8fafc',
     padding: 20,
+    justifyContent: 'center',
   },
   titleContainer: {
     alignItems: 'center',

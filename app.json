@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "aura",
-    "slug": "aura",
+    "name": "Auralize",
+    "slug": "Auralize",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/aura_logo.png",
-    "scheme": "aura",
+    "scheme": "auralize",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
