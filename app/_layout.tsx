@@ -1,24 +1,48 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import * as Location from "expo-location";
+import { Stack } from "expo-router";
+import { useEffect, useState } from "react";
+import { Button, Text, View } from "react-native";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [toggle, setToggle] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // Ask permission
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
+
+        // Get location
+        const loc = await Location.getCurrentPositionAsync({});
+        setLocation(loc);
+      } catch (err) {
+        setErrorMsg("Error getting location");
+      }
+    })();
+  }, [toggle]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <>
+      <Stack />
+      <View style={{ padding: 16, backgroundColor: "#fff" }}>
+        {errorMsg ? (
+          <Text style={{ color: "red" }}>{errorMsg}</Text>
+        ) : location ? (
+          <Text>
+            Lat: {location.coords.latitude}, Lon: {location.coords.longitude}
+          </Text>
+        ) : (
+          <Text>Fetching location...</Text>
+        )}
+
+        <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} />
+      </View>
+    </>
   );
 }
