@@ -55,6 +55,7 @@ export default function RootLayout() {
   return (
     <>
       <Stack />
+      
       <View style={{ padding: 16, backgroundColor: "#fff" }}>
         <CameraView facing={facing} enableTorch={torch} />
           <View>
@@ -62,7 +63,8 @@ export default function RootLayout() {
               <Text>Flip Camera</Text>
             </TouchableOpacity>
           </View>
-
+      
+        
         {/* {errorMsg ? (
           <Text style={{ color: "red" }}>{errorMsg}</Text>
         ) : location ? (
@@ -74,7 +76,9 @@ export default function RootLayout() {
         )} */}
 
         {/* <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} /> */}
+        
         <Button title={torch ? "Torch On" : "Torch Off"} onPress={() => setTorch(t => !t)} />
+        
       </View>
     </>
   );
