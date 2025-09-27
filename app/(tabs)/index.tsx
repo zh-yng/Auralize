@@ -22,18 +22,6 @@ import { Toast } from 'toastify-react-native';
 import { db } from '../../firebaseConfig';
 
 export default function HomeScreen() {
-  let [fontsLoaded] = useFonts({
-    FunnelDisplay_300Light, 
-    FunnelDisplay_400Regular, 
-    FunnelDisplay_500Medium, 
-    FunnelDisplay_600SemiBold, 
-    FunnelDisplay_700Bold, 
-    FunnelDisplay_800ExtraBold
-  });
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   const [code, setCode] = useState<string | null>(null);
   const [inputCode, setInputCode] = useState('');
@@ -44,6 +32,14 @@ export default function HomeScreen() {
   const [aura, setAura] = useState('');
 
   const { user, handleAnonymousSignIn } = useFirebaseAuth();
+  let [fontsLoaded] = useFonts({
+    FunnelDisplay_300Light, 
+    FunnelDisplay_400Regular, 
+    FunnelDisplay_500Medium, 
+    FunnelDisplay_600SemiBold, 
+    FunnelDisplay_700Bold, 
+    FunnelDisplay_800ExtraBold
+  });
 
   //num generation
   const handleCreateRoom = async () => {
@@ -217,6 +213,7 @@ export default function HomeScreen() {
     }
   };
 
+  if (!fontsLoaded) return null;
   return (
       <ThemedView style={styles.container}>
         <ThemedView style={styles.titleContainer}>

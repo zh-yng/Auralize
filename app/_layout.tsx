@@ -54,7 +54,7 @@ export default function RootLayout() {
     <>
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['right', 'top', 'left', 'bottom']}>
       <Stack screenOptions={{ headerShown: false }} />
-      <ToastManager />
+      <ToastManager useModal={false} />
     </SafeAreaView>
     </>
   );
