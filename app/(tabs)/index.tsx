@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, Keyboard, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -215,6 +215,7 @@ export default function HomeScreen() {
 
   if (!fontsLoaded) return null;
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ThemedView style={styles.container}>
         <ThemedView style={styles.titleContainer}>
           {code && <TouchableOpacity style={styles.button} onPress={code ? (host && user && host === user.uid ? handleCloseRoom : handleLeaveRoom) : undefined} disabled={!code}>
@@ -289,7 +290,7 @@ export default function HomeScreen() {
                       type="numeric"
                       theme={{ containerStyle: styles.digits }}
                       autoFocus={false}
-                      focusColor="green"
+                      focusColor="#EB5E28"
                     />
                     <TouchableOpacity
                       disabled={!(inputCode.length === 4)}
@@ -313,6 +314,7 @@ export default function HomeScreen() {
                 </>
               )}
       </ThemedView>
+      </TouchableWithoutFeedback>
   );
 }
 
