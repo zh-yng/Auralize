@@ -4,6 +4,15 @@ import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
+// import roboto flex font from expo google fonts
+import { FunnelDisplay_300Light } from '@expo-google-fonts/funnel-display/300Light';
+import { FunnelDisplay_400Regular } from '@expo-google-fonts/funnel-display/400Regular';
+import { FunnelDisplay_500Medium } from '@expo-google-fonts/funnel-display/500Medium';
+import { FunnelDisplay_600SemiBold } from '@expo-google-fonts/funnel-display/600SemiBold';
+import { FunnelDisplay_700Bold } from '@expo-google-fonts/funnel-display/700Bold';
+import { FunnelDisplay_800ExtraBold } from '@expo-google-fonts/funnel-display/800ExtraBold';
+import { useFonts } from '@expo-google-fonts/funnel-display/useFonts';
+
 // Firebase imports
 import Flashlight from '@/components/flashlight';
 import useFirebaseAuth from '@/hooks/use-firebase-auth';
@@ -13,6 +22,19 @@ import { Toast } from 'toastify-react-native';
 import { db } from '../../firebaseConfig';
 
 export default function HomeScreen() {
+  let [fontsLoaded] = useFonts({
+    FunnelDisplay_300Light, 
+    FunnelDisplay_400Regular, 
+    FunnelDisplay_500Medium, 
+    FunnelDisplay_600SemiBold, 
+    FunnelDisplay_700Bold, 
+    FunnelDisplay_800ExtraBold
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const [code, setCode] = useState<string | null>(null);
   const [inputCode, setInputCode] = useState('');
   const [members, setMembers] = useState<string[]>([]);
@@ -216,7 +238,7 @@ export default function HomeScreen() {
         <ThemedView style={styles.titleContainer}>
           {!user && (
             <TouchableOpacity style={styles.button} onPress={handleAnonymousSignIn}>
-              <ThemedText style={styles.titleText}>Sign in Anonymously</ThemedText>
+              <ThemedText style={styles.buttonText}>Sign in</ThemedText>
             </TouchableOpacity>
           )}
         </ThemedView>
@@ -333,17 +355,20 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     marginBottom: 8,
     textAlign: 'center',
+    fontFamily: 'Funnel Display',
   },
   subtitleText: {
     fontSize: 16,
     fontWeight: '400',
     color: '#64748b',
     textAlign: 'center',
+    fontFamily: 'Funnel Display',
   },
   buttonText: {
     fontSize: 18,
     fontWeight: '600',
     color: '#334155',
+    fontFamily: 'Funnel Display',
   },
   reactLogo: {
     height: 250,
