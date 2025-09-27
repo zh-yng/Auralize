@@ -198,6 +198,12 @@ export default function HomeScreen() {
   return (
       <ThemedView style={styles.container}>
         <ThemedView style={styles.titleContainer}>
+          {code && <TouchableOpacity style={styles.button} onPress={code ? (host && user && host === user.uid ? handleCloseRoom : handleLeaveRoom) : undefined} disabled={!code}>
+            <ThemedText style={styles.buttonText}>{code ? (host && user && host === user.uid ? 'Close Room' : 'Leave Room') : 'Not in a Room'}</ThemedText>
+          </TouchableOpacity>}
+        </ThemedView>
+
+        <ThemedView style={styles.titleContainer}>
           {!user && <ThemedText type="title" style={styles.titleText}>Welcome to Auralize</ThemedText>}
           {user && code && (
             <>
@@ -227,17 +233,21 @@ export default function HomeScreen() {
             <TouchableOpacity style={styles.button} onPress={() => handlePress('ripple')}>
               <ThemedText style={styles.buttonText}>🌊 Ripple</ThemedText>
             </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.button} onPress={() => handlePress('heart')}>
-              <ThemedText style={styles.buttonText}>❤️ Heart</ThemedText>
-            </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => handlePress('shine')}>
               <ThemedText style={styles.buttonText}>💡 Shine</ThemedText>
             </TouchableOpacity>
 
+            <TouchableOpacity style={styles.button} onPress={() => handlePress('heart')}>
+              <ThemedText style={styles.buttonText}>❤️ Heart</ThemedText>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.button} onPress={() => handlePress('custom')}>
-              <ThemedText style={styles.buttonText}> 🎉Custom</ThemedText>
+              <ThemedText style={styles.buttonText}>🎉 Custom</ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={() => handlePress('off')}>
+              <ThemedText style={styles.buttonText}>Turn Off</ThemedText>
             </TouchableOpacity>
           </ThemedView>
           </>

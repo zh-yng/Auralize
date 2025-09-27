@@ -4,6 +4,7 @@ import { useExpoLocation } from '@/hooks/use-expo-location';
 import { Stack } from "expo-router";
 import { useEffect } from 'react';
 import { Button, Text, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import ToastManager from 'toastify-react-native';
 
 export default function RootLayout() {
@@ -33,7 +34,7 @@ export default function RootLayout() {
   if (!permission.granted) {
     // Camera permissions are not granted yet.
     return (
-      <View style={{ padding: 16, backgroundColor: "#fff", marginTop: 100 }}>
+      <View style={{ padding: 16, backgroundColor: "#e2e8f0", marginTop: 100 }}>
         <Text>We need your permission to show the camera</Text>
         <Button onPress={requestPermission} title="grant permission" />
       </View>
@@ -51,26 +52,10 @@ export default function RootLayout() {
 
   return (
     <>
-    {/* <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['right', 'top', 'left', 'bottom']}> */}
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['right', 'top', 'left', 'bottom']}>
       <Stack screenOptions={{ headerShown: false }} />
       <ToastManager />
-    {/* </SafeAreaView> */}
+    </SafeAreaView>
     </>
-    // <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['right', 'top', 'left', 'bottom']}>
-    // </SafeAreaView>
-        /* <CameraView facing={facing} enableTorch={torch} /> */
-          
-          /* {errorMsg ? (
-            <Text style={{ color: "red" }}>{errorMsg}</Text>
-          ) : location ? (
-            <Text>
-              Lat: {location.coords.latitude}, Lon: {location.coords.longitude}
-            </Text>
-          ) : (
-            <Text>Fetching location...</Text>
-          )} */
-
-          /* <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} /> */
-          /* <Button title={torch ? "Torch Off" : "Torch On"} onPress={() => setTorch(t => !t)} /> */
   );
 }

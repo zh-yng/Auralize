@@ -15,6 +15,7 @@ return (
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         tabBarShowLabel: false,
+        headerShown: false,
         tabBarButton: HapticTab,
       }}>
       <Tabs.Screen
@@ -23,6 +24,7 @@ return (
           headerShown: false,
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarStyle: { display: 'none' }
         }}
       />
     </Tabs>
