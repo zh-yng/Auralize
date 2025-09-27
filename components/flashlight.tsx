@@ -41,7 +41,7 @@ const Flashlight = (props: FlashlightProps) => {
                     break;
             }
           }
-        }, 200);
+        }, 100);
     
         return () => clearInterval(interval);
       }, [props.aura, location]);

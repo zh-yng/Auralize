@@ -62,7 +62,12 @@ export default function HomeScreen() {
       const unsub = onSnapshot(roomRef, (s) => {
         if (s.exists()) {
           const data = s.data() as any;
-          if (data.aura) setAura(data.aura);
+          if (data.aura) {
+            setAura(data.aura);
+            if (user && user.uid !== data.host) {
+              Toast.info(`Host changed the feature to ${data.aura}`);
+            }
+          }
           setMembers(data.members || []);
         } else {
           setAura('');
@@ -95,8 +100,6 @@ export default function HomeScreen() {
         Toast.error("Failed to update feature");
       });
     }
-    
-    Alert.alert('Feature Selected', `You selected ${feature} in room ${code}`);
     setAura(feature);
   };
 
@@ -247,21 +250,21 @@ export default function HomeScreen() {
           <>
           <ThemedView style={styles.buttonsContainer}>
             <ThemedView style={styles.row}>
-              <TouchableOpacity style={styles.special} onPress={() => handlePress('twinkle')}>
-                <ThemedText style={styles.buttonText}>✨ Twinkle</ThemedText>
+              <TouchableOpacity style={aura == 'twinkle' ? styles.orangeSpecial : styles.special} onPress={() => handlePress('twinkle')}>
+                <ThemedText style={aura == 'twinkle' ? styles.orangeButtonText : styles.buttonText}>✨ Twinkle</ThemedText>
               </TouchableOpacity>
-            
-              <TouchableOpacity style={styles.special} onPress={() => handlePress('ripple')}>
-                <ThemedText style={styles.buttonText}>🌊 Ripple</ThemedText>
+
+              <TouchableOpacity style={aura == 'ripple' ? styles.orangeSpecial : styles.special} onPress={() => handlePress('ripple')}>
+                <ThemedText style={aura == 'ripple' ? styles.orangeButtonText : styles.buttonText}>🌊 Ripple</ThemedText>
               </TouchableOpacity>
             </ThemedView>
             <ThemedView style={styles.row}>
-              <TouchableOpacity style={styles.special} onPress={() => handlePress('shine')}>
-                <ThemedText style={styles.buttonText}>💡 Shine</ThemedText>
+              <TouchableOpacity style={aura == 'shine' ? styles.orangeSpecial : styles.special} onPress={() => handlePress('shine')}>
+                <ThemedText style={aura == 'shine' ? styles.orangeButtonText : styles.buttonText}>💡 Shine</ThemedText>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.special} onPress={() => handlePress('heart')}>
-                <ThemedText style={styles.buttonText}>❤️ Heart</ThemedText>
+              <TouchableOpacity style={aura == 'heart' ? styles.orangeSpecial : styles.special} onPress={() => handlePress('heart')}>
+                <ThemedText style={aura == 'heart' ? styles.orangeButtonText : styles.buttonText}>❤️ Heart</ThemedText>
               </TouchableOpacity>
             </ThemedView>
                 <TouchableOpacity style={styles.button} onPress={() => handlePress('custom')}>
@@ -307,8 +310,10 @@ export default function HomeScreen() {
                     </ThemedView>
                   )}
 
-                  <TouchableOpacity style={styles.button} onPress={() => handleCreateRoom()}>
-                    <ThemedText style={styles.buttonText}>🤝 Auralize </ThemedText>
+                  <ThemedText style={styles.subtitleText}>OR</ThemedText>
+
+                  <TouchableOpacity style={styles.orangeButton} onPress={() => handleCreateRoom()}>
+                    <ThemedText style={styles.orangeButtonText}>🌟 Create a New Aura </ThemedText>
                   </TouchableOpacity>
                 </ThemedView>
                 </>
@@ -351,6 +356,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e2e8f0',
   },
+  orangeButton: {
+    backgroundColor: '#f85818ff',
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#f56b34ff',
+  },
   titleText: {
     fontSize: 32,
     fontWeight: '700',
@@ -370,6 +392,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#334155',
+    fontFamily: 'FunnelDisplay_600SemiBold', // ✅ exact key
+},
+orangeButtonText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#fff',
     fontFamily: 'FunnelDisplay_600SemiBold', // ✅ exact key
 },
   reactLogo: {
@@ -406,6 +434,24 @@ const styles = StyleSheet.create({
     elevation: 3,
     borderWidth: 1,
     borderColor: '#e2e8f0',
+  },
+  orangeSpecial:{
+    width: 150,
+    backgroundColor: '#f85818ff',
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#f56b34ff',
   },
   digits: { width: 200, justifyContent: 'space-between' },
   horizontal: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'transparent' },
