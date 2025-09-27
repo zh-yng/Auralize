@@ -1,14 +1,31 @@
 import { useExpoCamera } from '@/hooks/use-expo-camera';
 import { useExpoLocation } from '@/hooks/use-expo-location';
-import CameraView from 'expo-camera/build/CameraView';
+import { CameraView } from 'expo-camera';
 
 import { Stack } from "expo-router";
+import { useEffect } from 'react';
 import { Button, Text, View } from "react-native";
 
 export default function RootLayout() {
 
   const { location, errorMsg } = useExpoLocation();
-  const { facing, setFacing, torch, setTorch, permission, requestPermission } = useExpoCamera();
+  const { facing, torch, setTorch, permission, requestPermission } = useExpoCamera();
+
+  const k1 = 0.1;
+  const k2 = 0.1;
+  const omega = 2 * Math.PI / 1000; // one full cycle every 1000 ms
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (location != null) {
+        const sineValue = Math.sin(k1 * location.coords.longitude + k2 * location.coords.latitude - omega * (Date.now()));
+        setTorch(sineValue > 0);
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, []);
+
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
@@ -31,14 +48,15 @@ export default function RootLayout() {
   //   setFacing(current => (current === 'back' ? 'front' : 'back'));
   // }
 
+
   return (
     <>
-      <Stack />
+      <Stack screenOptions={{ headerShown: false }} />
       
       <View style={{ padding: 16, marginBottom: 80, backgroundColor: "#fff" }}>
         <CameraView facing={facing} enableTorch={torch} />
         
-        {errorMsg ? (
+        {/* {errorMsg ? (
           <Text style={{ color: "red" }}>{errorMsg}</Text>
         ) : location ? (
           <Text>
@@ -46,10 +64,10 @@ export default function RootLayout() {
           </Text>
         ) : (
           <Text>Fetching location...</Text>
-        )}
+        )} */}
 
         {/* <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} /> */}
-        <Button title={torch ? "Torch Off" : "Torch On"} onPress={() => setTorch(t => !t)} />
+        {/* <Button title={torch ? "Torch Off" : "Torch On"} onPress={() => setTorch(t => !t)} /> */}
 
       </View>
     </>
