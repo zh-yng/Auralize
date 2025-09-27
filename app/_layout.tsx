@@ -7,14 +7,12 @@ import { Button, Text, View } from "react-native";
 
 export default function RootLayout() {
 
-  const { location, errorMsg, toggle, setToggle } = useExpoLocation();
+  const { location, errorMsg } = useExpoLocation();
   const { facing, setFacing, torch, setTorch, permission, requestPermission } = useExpoCamera();
-
   if (!permission) {
     // Camera permissions are still loading.
     return <View />;
   }
-
   if (!permission.granted) {
     // Camera permissions are not granted yet.
     return (
@@ -25,6 +23,10 @@ export default function RootLayout() {
     );
   }
 
+  // if (!torch) {
+  //   setTorch(true);
+  // }
+
   // function toggleCameraFacing() {
   //   setFacing(current => (current === 'back' ? 'front' : 'back'));
   // }
@@ -33,7 +35,7 @@ export default function RootLayout() {
     <>
       <Stack />
       
-      <View style={{ padding: 16, backgroundColor: "#fff" }}>
+      <View style={{ padding: 16, marginBottom: 80, backgroundColor: "#fff" }}>
         <CameraView facing={facing} enableTorch={torch} />
         
         {errorMsg ? (
@@ -46,8 +48,7 @@ export default function RootLayout() {
           <Text>Fetching location...</Text>
         )}
 
-        <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} />
-
+        {/* <Button title="Refresh Location" onPress={() => setToggle((t) => !t)} /> */}
         <Button title={torch ? "Torch Off" : "Torch On"} onPress={() => setTorch(t => !t)} />
 
       </View>
