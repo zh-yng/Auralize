@@ -1,5 +1,8 @@
 # Auralize
 
+> Auralize transforms every smartphone into part of a synchronized light show, creating instant community at any event without expensive hardware. A host generates a 4-digit code, friends join instantly, and phones sync in real time to effects like Twinkle or Ripple using GPS-driven wave simulations. 
+> Built with React Native + Expo for seamless cross-platform usability and Firebase for lightweight authentication and real-time sync, Auralize is fast, intuitive, and scalable from 4 to 40,000 users. Its polished interface makes effects easy to launch while keeping the experience immersive and aesthetic. Unlike disposable LED wristbands, Auralize is free, customizable, and universally accessible, redefining audience engagement.
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
